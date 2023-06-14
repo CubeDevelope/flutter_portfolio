@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:personal_finance_manager/main.dart';
+import 'package:personal_finance_manager/utils/constants.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
@@ -26,5 +27,33 @@ void main() {
     // Verify that our counter has incremented.
     expect(find.text('0'), findsNothing);
     expect(find.text('1'), findsOneWidget);
+  });
+
+  testWidgets('Create a new transaction', (widgetTester) async {
+    await widgetTester.pumpWidget(const MyApp());
+
+    //Premo il pulsante per aprire la schermata di inserimento transazione
+
+    final openNewTransactionPageButton = find.byType(FloatingActionButton);
+    await widgetTester.tap(openNewTransactionPageButton);
+
+    await widgetTester.pump();
+
+    final nameOfTransactionTextField = find.byKey(TestElements.titleOfTransactionKey);
+    final amountOfTransactionTextField = find.byKey(TestElements.amountOfTransactionKey);
+
+    await widgetTester.enterText(nameOfTransactionTextField, "First transaction");
+    await widgetTester.pump();
+
+    await widgetTester.enterText(amountOfTransactionTextField, "10");
+    await widgetTester.pump();
+
+    final saveButton = find.byType(IconButton);
+    await widgetTester.tap(saveButton);
+    await widgetTester.pump();
+
+    final listview = widgetTester.widgetList(find.byType(ListView));
+
+    expect(listview.length, 1);
   });
 }
