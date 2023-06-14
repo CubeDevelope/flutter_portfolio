@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:personal_finance_manager/views/home.page.dart';
 import 'package:personal_finance_manager/views/new_transaction.page.dart';
 import 'package:personal_finance_manager/views/profile.page.dart';
@@ -30,6 +32,10 @@ extension RouteExt on Routes {
 class Router {
   static Route routing(RouteSettings settings) {
     Widget page = Container();
+    Tween<Offset> tween = Tween(
+      begin: const Offset(1, 0),
+      end: Offset.zero,
+    );
 
     switch (RouteExt.getRouteFromName(settings.name!)) {
       case Routes.home:
@@ -49,11 +55,23 @@ class Router {
         break;
     }
 
-    return PageRouteBuilder(
-      pageBuilder: (BuildContext context, Animation<double> animation,
-          Animation<double> secondaryAnimation) {
-        return SafeArea(child: page);
-      },
-    );
+    if (Platform.isIOS) {
+      return CupertinoPageRoute(
+        builder: (context) {
+          return SafeArea(child: page);
+        },
+      );
+    } else {
+      return PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 150),
+        pageBuilder: (BuildContext context, Animation<double> animation,
+            Animation<double> secondaryAnimation) {
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: SafeArea(child: page),
+          );
+        },
+      );
+    }
   }
 }

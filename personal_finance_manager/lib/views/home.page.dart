@@ -22,8 +22,6 @@ class _HomePageState extends State<HomePage> {
     return value;
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return ScaffoldProvider(
@@ -31,31 +29,33 @@ class _HomePageState extends State<HomePage> {
         return Column(
           children: [
             //Qui saranno inseriti i text che mostreranno l'ammontare economico dell'utente
-            Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  children: [
-                    //Questo mostrerà la variazione economica
-                    const Expanded(
-                      child: Text(""),
-                    ),
+            Container(
+              height: MediaQuery.of(context).size.height * .15,
+              child: Row(
+                children: [
+                  //Questo mostrerà la variazione economica
+                  const Text(""),
 
-                    //Questo text contiene il budget dell'utente
-                    Expanded(
-                      child: Text(
-                        "${_getTransactionSum(appProvider.transactions)}€",
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 32),
-                      ),
+                  //Questo text contiene il budget dell'utente
+                  Expanded(
+                    child: Text(
+                      "${_getTransactionSum(appProvider.transactions)}€",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 32),
                     ),
-                  ],
-                )),
+                  ),
+                ],
+              ),
+            ),
             //Qui verrà visuazizzata la lista delle transazioni
             Expanded(
               child: ListView.builder(
                 itemBuilder: (context, index) {
                   return ListTile(
-                    onTap: () {},
+                    onTap: () {
+                      appProvider.selectTransaction(index);
+                      Navigator.pushNamed(context, Routes.details.toRoute);
+                    },
                     title: Text(
                         appProvider.transactions[index].titleOfTransaction),
                   );

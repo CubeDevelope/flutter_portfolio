@@ -20,5 +20,18 @@ class Transaction {
     uuid = id;
   }
 
+  setAll({String? title, double? amount}) {
+    if (title != null) titleOfTransaction = title;
+    if (amount != null) amountOfTransaction = amount;
+  }
+
+
+  clone(Transaction transaction) {
+    titleOfTransaction = transaction.titleOfTransaction;
+    amountOfTransaction = transaction.amountOfTransaction;
+    dateOfTransaction = transaction.dateOfTransaction;
+    descriptionOfTransaction = transaction.descriptionOfTransaction;
+  }
+
 
 }
