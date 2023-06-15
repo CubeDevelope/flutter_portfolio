@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:personal_finance_manager/business_logic/cubit/new_transaction.cubit.dart';
 import 'package:personal_finance_manager/models/transaction.model.dart';
 import 'package:personal_finance_manager/utils/constants.dart';
+import 'package:personal_finance_manager/views/components/new_category.button.dart';
 import 'package:personal_finance_manager/views/components/scaffold_provider.dart';
 
 class NewTransactionPage extends StatefulWidget {
@@ -14,8 +16,6 @@ class NewTransactionPage extends StatefulWidget {
 class _NewTransactionPageState extends State<NewTransactionPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
-
-  Transaction transaction = Transaction();
 
   Widget _buildInputField(TextEditingController controller, String hint,
       {TextInputType? type}) {
@@ -47,19 +47,21 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldProvider(
-      actions: (p0) {
+    return AppScaffold<NewTransactionCubit>(
+      cubit: NewTransactionCubit(),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      actions: (cubit) {
         List<Widget> actions = [];
         actions.add(IconButton(
           onPressed: () {
             if (_titleController.text.isNotEmpty &&
                 _amountController.text.isNotEmpty &&
                 double.tryParse(_amountController.text) != null) {
-              transaction.titleOfTransaction = _titleController.text;
-              transaction.amountOfTransaction =
+              cubit.transaction.titleOfTransaction = _titleController.text;
+              cubit.transaction.amountOfTransaction =
                   double.parse(_amountController.text);
 
-              p0.addTransaction(transaction);
+              cubit.addTransaction();
               Navigator.pop(context);
             }
 
@@ -73,28 +75,25 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
         return actions;
       },
       title: "New Transaction",
-      child: () {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              _buildInputField(_titleController, "Titolo della transazione"),
-              _buildInputField(
-                  _amountController, "Valore della transazione in €",
-                  type: TextInputType.number),
-              //Qui verrà inserito il titolo della transazione
-            ],
-          ),
+      builder: (cubit, state) {
+        _titleController.text = cubit.transaction.titleOfTransaction;
+        _amountController.text =
+            cubit.transaction.amountOfTransaction.toString();
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildInputField(_titleController, "Titolo della transazione"),
+            _buildInputField(_amountController, "Valore della transazione in €",
+                type: TextInputType.number),
+            const NewCategoryButton(
+              padding: EdgeInsets.symmetric(vertical: 16),
+            ),
+            Container(
+              key: const Key('cotegories_list_viwer'),
+            )
+          ],
         );
-      },
-      builder: (context, appProvider, child) {
-        if (appProvider.selectedTransaction != null) {
-          transaction = appProvider.selectedTransaction!;
-        }
-
-        _titleController.text = transaction.titleOfTransaction;
-        _amountController.text = transaction.amountOfTransaction.toString();
-        return child!;
       },
     );
   }

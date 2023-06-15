@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:personal_finance_manager/business_logic/cubit/home.cubit.dart';
 import 'package:personal_finance_manager/models/transaction.model.dart';
 import 'package:personal_finance_manager/utils/router.dart';
 import 'package:personal_finance_manager/views/components/scaffold_provider.dart';
@@ -24,12 +25,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldProvider(
-      builder: (p0, appProvider, p2) {
+    return AppScaffold<HomeCubit>(
+      builder: (cubit, state) {
         return Column(
           children: [
             //Qui saranno inseriti i text che mostreranno l'ammontare economico dell'utente
-            Container(
+            SizedBox(
               height: MediaQuery.of(context).size.height * .15,
               child: Row(
                 children: [
@@ -39,7 +40,7 @@ class _HomePageState extends State<HomePage> {
                   //Questo text contiene il budget dell'utente
                   Expanded(
                     child: Text(
-                      "${_getTransactionSum(appProvider.transactions)}€",
+                      "${_getTransactionSum(cubit.transactions)}€",
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 32),
                     ),
@@ -53,14 +54,15 @@ class _HomePageState extends State<HomePage> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     onTap: () {
-                      appProvider.selectTransaction(index);
+                      cubit.selectTransaction(index);
                       Navigator.pushNamed(context, Routes.details.toRoute);
                     },
+                    trailing: Text("${cubit.transactions.elementAt(index).amountOfTransaction}€"),
                     title: Text(
-                        appProvider.transactions[index].titleOfTransaction),
+                        cubit.transactions[index].titleOfTransaction),
                   );
                 },
-                itemCount: appProvider.transactions.length,
+                itemCount: cubit.transactionsLength,
               ),
             )
           ],
@@ -71,7 +73,7 @@ class _HomePageState extends State<HomePage> {
           Navigator.pushNamed(context, Routes.newTransaction.toRoute);
         },
         child: const Icon(Icons.add),
-      ),
+      ), cubit: HomeCubit(),
     );
   }
 }
